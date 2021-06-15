@@ -1,0 +1,71 @@
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#include	"../0/constants" 
+
+scale	1.0;
+
+NCHR	-1.0;  					// negative of chord
+R		 3.0;					// radius
+NR		-3.0 ; 					// negative of radius
+CL		#calc"-$CHR * 0.1";		// flank offset
+
+MX		#calc"-cos(45 * $PI / 180) * $R";	// arc 'x'
+MYP		#calc" sin(45 * $PI / 180) * $R";	// arc positive 'y' 
+MYN		#calc"-sin(45 * $PI / 180) * $R";	// arc negative 'y'		
+
+GX		10;									// LE-to-TE grading
+GY		50; 								// topwards grading
+IGX		#calc"1.0/$GX"; 					// inverse of GX
+IGY 	#calc"1.0/$GY"; 					// inverse of GY
+
+vertices
+(
+	($NCHR	0	-0.5) 	//0
+	(0		0	-0.5) 	//1
+	($CL	$R	-0.5) 	//2
+	($NR	0	-0.5) 	//3
+	($CL	$NR	-0.5) 	//4
+	($L		$NR	-0.5) 	//5
+	($L		$H0	-0.5) 	//6
+	($L		$R	-0.5) 	//7
+	(0		0	-0.5) 	//8=1
+
+	($NCHR	0	 0.5) 	//9
+	(0		0	 0.5) 	//10
+	($CL	$R	 0.5) 	//11
+	($NR	0	 0.5) 	//12
+	($CL	$NR	 0.5) 	//13
+	($L		$NR	 0.5) 	//14
+	($L		$H0	 0.5) 	//15
+	($L		$R	 0.5) 	//16
+	(0		0	 0.5) 	//17=10
+);
+
+blocks
+(
+	hex (0 1 2 3 9 10 11 12) (150 50 1) 
+	edgeGrading ($GX 0.05 0.2 $GX  $GY $GY $GY $GY  1 1 1 1)
+
+	hex (1 6 7 2 10 15 16 11) (150 50 1) 
+	simpleGrading ($GX $GY 1)
+
+	hex (3 4 8 0 12 13 17 9) (150 50 1) 
+	edgeGrading (0.05 $GX $GX 0.2  $IGY $IGY $IGY $IGY  1 1 1 1)
+
+	hex (4 5 6 8 13 14 15 17) (150 50 1) 
+	simpleGrading ($GX $IGY 1)
+);
+
+edges
+(
+	arc 2 3 	($MX $MYP -0.5)
+	arc 3 4 	($MX $MYN -0.5)
+	arc 11 12 	($MX $MYP  0.5)
+	arc 12 13 	($MX $MYN  0.5)
