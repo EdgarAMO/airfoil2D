@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v1906                                 |
+|   \\  /    A nd           | Web:      www.OpenFOAM.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+
+AOA		7;						// AOA
+U		15.0;					// freestream velocity
+I		0.01;   				// turbulence intensity
+CHR		1.00;					// chord
+
+PI		3.14159265359;				
+UX		#calc"cos($AOA * $PI / 180) * $U";	// streamwise velocity
+UY		#calc"sin($AOA * $PI / 180) * $U";	// cross-stream velocity
+
+L		10;						// outlet downwind dist.	
+H0		#calc"tan($AOA * $PI / 180) * $L";
+	
+LX		#calc"-sin($AOA * $PI / 180)";
+LY		#calc" cos($AOA * $PI / 180)";
+DX		#calc" cos($AOA * $PI / 180)";
+DY		#calc" sin($AOA * $PI / 180)";
+COFR	#calc"-0.75 * $CHR";	
+
+
+// SIMULATION PARAMETERS
+
+// TKE:	1.5 * (U * I) ** 2
+// epsilon:	(Cm ^ 0.75) * (k ^ 1.5) / D
+// omega:	sqrt(k) / ((Cm ^ 0.25) * D)
+// nut:	Cm * (k ^ 2) / epsilon
+// nuT:	nuTilda
+			
+k			#calc"(3./2.) * pow($U * $I, 2)";
+epsilon  	#calc"pow(0.09, 0.75) * pow($k, 1.5) / (0.08 * $CHR)";
+omega	    #calc"sqrt($k) / (pow(0.09, 0.25) * 0.08 * $CHR)";
+nut   		#calc"0.09 * pow($k, 2) / $epsilon";
+nuT			$nut;
+
+
+
+
+
+
+
+
+
+
+
+
+ 
+
+
